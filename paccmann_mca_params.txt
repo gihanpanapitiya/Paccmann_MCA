@@ -3,7 +3,6 @@ gep_filepath = 'gdsc-rnaseq_gene-expression.csv'
 smi_filepath = 'gdsc.smi'
 gene_filepath = '2128_genes.pkl'
 smiles_language_filepath = 'smiles_language_chembl_gdsc_ccle.pkl'
-
 drug_sensitivity_min_max = False
 gene_expression_standardize = False
 augment_smiles = True
