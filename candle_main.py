@@ -9,14 +9,6 @@ file_path = os.path.dirname(os.path.realpath(__file__))
 
 
 additional_definitions = [
-    {'name':'train_sensitivity_filepath',
-     'type':str,
-     'help':'Path to the drug sensitivity (IC50) data.'
-    },
-    {'name': 'test_sensitivity_filepath',
-     'type': str,
-     'help': 'Path to the drug sensitivity (IC50) data.'
-     },
     {'name': 'gep_filepath',
      'type': str,
      'help': 'Path to the gene expression profile data.'
@@ -89,14 +81,6 @@ additional_definitions = [
     {'name': 'gene_to_dense',
      'type': bool,
      'help': '.....'
-     },
-    {'name': 'optimizer',
-     'type': str,
-     'help': 'Optimizer name'
-     },
-    {'name': 'loss',
-     'type': str,
-     'help': 'Loss function'
      },
     {'name': 'smiles_vocabulary_size',
      'type': int,
