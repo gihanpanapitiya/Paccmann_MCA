@@ -20,7 +20,7 @@ anticancer drug sensitivity prediction and drug target affinity prediction. Plea
 
 ## Installation
 
-This model is curated as a part of the [_IMPROVE Project_] (https://github.com/JDACS4C-IMPROVE.
+This model is curated as a part of the [_IMPROVE Project_] (https://github.com/JDACS4C-IMPROVE)
 The original code is [_here_](https://github.com/PaccMann/paccmann_predictor)
 
 
