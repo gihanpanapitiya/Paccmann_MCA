@@ -6,17 +6,12 @@
 Drug interaction prediction with PaccMann.
 
 `paccmann_predictor` is a package for drug interaction prediction, with examples of 
-anticancer drug sensitivity prediction and drug target affinity prediction. Please see our papers:
+anticancer drug sensitivity prediction and drug target affinity prediction. Please see the paper:
 
 - [_Toward explainable anticancer compound sensitivity prediction via multimodal attention-based convolutional encoders_](https://doi.org/10.1021/acs.molpharmaceut.9b00520) (*Molecular Pharmaceutics*, 2019). This is the original paper on IC50 prediction using drug properties and tissue-specific cell line information (gene expression profiles). While the original code was written in `tensorflow` and is available [here](https://github.com/drugilsberg/paccmann), this is the `pytorch` implementation of the best PaccMann architecture (multiscale convolutional encoder).
 
-- [Data-driven molecular design for discovery and synthesis of novel ligands: a case study on SARS-CoV-2](https://iopscience.iop.org/article/10.1088/2632-2153/abe808) (_Machine Learning: Science and Technology_, 2021). In there, we propose a slightly modified version to predict drug-target binding affinities based on protein sequences and SMILES
-
 
 *NOTE*: PaccMann acronyms "Prediction of AntiCancer Compound sensitivity with Multi-modal Attention-based Neural Networks".
-
-**PaccMann for affinity prediction:**
-![Graphical abstract](https://github.com/PaccMann/paccmann_predictor/blob/master/assets/paccmann.png "Graphical abstract")
 
 
 ## Requirements
@@ -25,8 +20,9 @@ anticancer drug sensitivity prediction and drug target affinity prediction. Plea
 
 ## Installation
 
-The library itself has few dependencies (see [setup.py](setup.py)) with loose requirements. 
-To run the example training script we provide environment files under `examples/IC50/`.
+This model is curated as a part of the [_IMPROVE Project_] (https://github.com/JDACS4C-IMPROVE.
+The original code is [_here_](https://github.com/PaccMann/paccmann_predictor)
+
 
 Create a conda environment:
 
@@ -45,39 +41,16 @@ Install in editable mode for development:
 ```sh
 pip install -e .
 ```
+Install CANDLE package
+```sh
+pip install git+https://github.com/ECP-CANDLE/candle_lib@develop
+```
 
 ## Example usage
 
-In the `examples` directory is a training script [train_paccmann.py](./examples/IC50/train_paccmann.py) that makes use
-of `paccmann_predictor`.
-
-```console
-(paccmann_predictor) $ python examples/IC50/train_paccmann.py -h
-usage: train_paccmann.py [-h]
-                         train_sensitivity_filepath test_sensitivity_filepath
-                         gep_filepath smi_filepath gene_filepath
-                         smiles_language_filepath model_path params_filepath
-                         training_name
-
-positional arguments:
-  train_sensitivity_filepath
-                        Path to the drug sensitivity (IC50) data.
-  test_sensitivity_filepath
-                        Path to the drug sensitivity (IC50) data.
-  gep_filepath          Path to the gene expression profile data.
-  smi_filepath          Path to the SMILES data.
-  gene_filepath         Path to a pickle object containing list of genes.
-  smiles_language_filepath
-                        Path to a pickle object a SMILES language object.
-  model_path            Directory where the model will be stored.
-  params_filepath       Path to the parameter file.
-  training_name         Name for the training.
-
-optional arguments:
-  -h, --help            show this help message and exit
+```sh
+python candle_main.py
 ```
-
-`params_filepath` could point to [examples/IC50/example_params.json](examples/IC50/example_params.json), examples for other files can be downloaded from [here](https://ibm.box.com/v/paccmann-pytoda-data).
 
 ## References
 
