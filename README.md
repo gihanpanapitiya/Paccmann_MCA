@@ -47,9 +47,13 @@ pip install git+https://github.com/ECP-CANDLE/candle_lib@develop
 ```
 
 ## Example usage
-
+Model Training
 ```sh
-python candle_main.py
+python train.py
+```
+Model Testing
+```sh
+python infer.py
 ```
 
 ## References
