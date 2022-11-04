@@ -143,7 +143,6 @@ def run(args):
 def candle_main():
     params = initialize_parameters()
     params_parse = {}
-    #params_parse['train_sensitivity_filepath'] = os.environ['CANDLE_DATA_DIR'] + '/common/Data/'+params['train_data']
     params_parse['test_sensitivity_filepath'] = os.environ['CANDLE_DATA_DIR'] + '/common/Data/'+params['test_data']
     params_parse['gep_filepath'] = os.environ['CANDLE_DATA_DIR'] + '/common/Data/'+params['gep_filepath']
     params_parse['smi_filepath'] = os.environ['CANDLE_DATA_DIR'] + '/common/Data/'+params['smi_filepath']
