@@ -126,7 +126,7 @@ def initialize_parameters():
     #Initialize parameters
     candle_data_dir = os.getenv("CANDLE_DATA_DIR")
     gParameters = candle.finalize_parameters(preprocessor_bmk)
-    os.environ['CANDLE_DATA_DIR'] = '/tmp/data_mca'
+    #os.environ['CANDLE_DATA_DIR'] = '/tmp/data_mca'
     fname='Data.zip'
     origin=gParameters['data_url']
     # Download and unpack the data in CANDLE_DATA_DIR
