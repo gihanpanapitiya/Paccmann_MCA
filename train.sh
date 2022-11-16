@@ -9,7 +9,7 @@
 # arg 3 CANDLE_CONFIG
 
 ### Path to your CANDLEized model's main Python script###
-CANDLE_MODEL=#PATH#
+CANDLE_MODEL=/usr/local/Paccmann_MCA/train.py
 
 # Reading command line arguments
 CUDA_VISIBLE_DEVICES=$1
@@ -19,7 +19,7 @@ CANDLE_CONFIG=$3
 # Check if CANDLE_CONFIG exists if user passed this parameter and prepare 
 if [ ! -z "${CANDLE_CONFIG}" ]; then
         if [ ! -f "$CANDLE_CONFIG" ]; then
-            echo "Cannot read configuration file! If you want to run model with default parameters leave third option empty."
+	    echo "Usage: train.sh CUDA_VISIBLE_DEVICES CANDLE_DATA_DIR CANDLE_CONFIG"
 			exit -1
 		else
 			CMD="python3 ${CANDLE_MODEL} --config_file ${CANDLE_CONFIG}"
@@ -37,5 +37,3 @@ echo "running command ${CMD}"
 
 # Set up environmental variables and execute model
 CUDA_VISIBLE_DEVICES=${CUDA_VISIBLE_DEVICES} CANDLE_DATA_DIR=${CANDLE_DATA_DIR} $CMD
-
-
