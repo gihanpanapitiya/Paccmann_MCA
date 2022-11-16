@@ -20,8 +20,6 @@ from scipy.stats import spearmanr
 import sklearn
 import pandas as pd
 
-
-
 # setup logging
 logging.basicConfig(stream=sys.stdout, level=logging.DEBUG)
 file_path = os.path.dirname(os.path.realpath(__file__))
