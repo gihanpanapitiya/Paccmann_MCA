@@ -1,8 +1,9 @@
+#!/bin/bash
+
 #############################################################################################################
 ### THIS IS A TEMPLATE FILE. SUBSTITUTE '???' ENTRIES WITH THE APPROPRiATE INFORMATION FOR YOUR CONTAINER ###
 #############################################################################################################
 
-#!/bin/bash
 
 # arg 1 CUDA_VISIBLE_DEVICES
 # arg 2 CANDLE_DATA_DIR
@@ -36,4 +37,5 @@ echo "using CANDLE_CONFIG ${CANDLE_CONFIG}"
 echo "running command ${CMD}"
 
 # Set up environmental variables and execute model
+source /opt/conda/bin/activate /usr/local/conda_envs/Paccmann_MCA
 CUDA_VISIBLE_DEVICES=${CUDA_VISIBLE_DEVICES} CANDLE_DATA_DIR=${CANDLE_DATA_DIR} $CMD
