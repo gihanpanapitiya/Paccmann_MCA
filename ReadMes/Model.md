@@ -12,3 +12,15 @@ The primary data sources for this model are:
 ## Preprocessing
 The authors utilize the [Pytoda](https://paccmann.github.io/paccmann_datasets/api/pytoda.html) package developed by the group to handle the preprocessing of the SMILES data.
 
+## Evaluation
+Two evaluation schemes were used for the analysis of prediction performance.
+1) Strict split - Neither the cell lines nor the compound structures within the test dataset have been seen by the model prior to testing. 
+2) Linient split - Instead of fully depriving the model from both the cells and drugs in the test set, this strategy ensured that no cell−drug pair in the test set has been seen before by the model.
+
+## URLs
+- Original GitHub: https://github.com/PaccMann/paccmann_predictor
+- IMPROVE GitHub: https://github.com/JDACS4C-IMPROVE/Paccmann_MCA/tree/develop
+- Data: https://ftp.mcs.anl.gov/pub/candle/public/improve/Paccmann_MCA/Data.zip
+
+## Reference
+Manica, Matteo, et al. "Toward explainable anticancer compound sensitivity prediction via multimodal attention-based convolutional encoders." Molecular Pharmaceutics 16.12 (2019): 4797-4806.
