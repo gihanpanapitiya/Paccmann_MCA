@@ -10,5 +10,5 @@ The primary data sources for this model are:
 2) The compound structural information from PubChem and the LINCS database
 
 ## Preprocessing
-The authors utilize the [Pytoda] (https://paccmann.github.io/paccmann_datasets/api/pytoda.html) package developed by the group to handle the preprocessing of the SMILES data.
+The authors utilize the [Pytoda](https://paccmann.github.io/paccmann_datasets/api/pytoda.html) package developed by the group to handle the preprocessing of the SMILES data.
 
