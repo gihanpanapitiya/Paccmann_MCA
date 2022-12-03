@@ -8,3 +8,7 @@ This model uses SMILES strings as drug features and gene expression as cell-line
 The primary data sources for this model are:
 1) Raw cell line data from GDSC
 2) The compound structural information from PubChem and the LINCS database
+
+## Preprocessing
+The authors utilize the [Pytoda] (https://paccmann.github.io/paccmann_datasets/api/pytoda.html) package developed by the group to handle the preprocessing of the SMILES data.
+
