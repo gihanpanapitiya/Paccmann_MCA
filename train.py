@@ -1,6 +1,7 @@
 import candle
 import os
 from train_paccmann2 import main
+import json
 
 
 # This should be set outside as a user environment variable
@@ -133,17 +134,20 @@ def preprocess(params):
     origin=params['data_url']
     # Download and unpack the data in CANDLE_DATA_DIR
     candle.file_utils.get_file(fname, origin)
+    # Model-specific changes
+    params['train_data'] = os.environ['CANDLE_DATA_DIR'] + '/common/Data/'+params['train_data']
+    params['val_data'] = os.environ['CANDLE_DATA_DIR'] + '/common/Data/'+params['val_data']
+    params['gep_filepath'] = os.environ['CANDLE_DATA_DIR'] + '/common/Data/'+params['gep_filepath']
+    params['smi_filepath'] = os.environ['CANDLE_DATA_DIR'] + '/common/Data/'+params['smi_filepath']
+    params['gene_filepath'] = os.environ['CANDLE_DATA_DIR'] + '/common/Data/'+params['gene_filepath']
+    params['smiles_language_filepath'] = os.environ['CANDLE_DATA_DIR'] + '/common/Data/'+params['smiles_language_filepath']
+    return params
 
 def run(params):
-    params_parse = {}
-    params_parse['train_sensitivity_filepath'] = os.environ['CANDLE_DATA_DIR'] + '/common/Data/'+params['train_data']
-    params_parse['val_sensitivity_filepath'] = os.environ['CANDLE_DATA_DIR'] + '/common/Data/'+params['val_data']
-    params_parse['gep_filepath'] = os.environ['CANDLE_DATA_DIR'] + '/common/Data/'+params['gep_filepath']
-    params_parse['smi_filepath'] = os.environ['CANDLE_DATA_DIR'] + '/common/Data/'+params['smi_filepath']
-    params_parse['gene_filepath'] = os.environ['CANDLE_DATA_DIR'] + '/common/Data/'+params['gene_filepath']
-    params_parse['smiles_language_filepath'] = os.environ['CANDLE_DATA_DIR'] + '/common/Data/'+params['smiles_language_filepath']
-    params_parse['output_dir'] = params['output_dir']
-    params_parse['model_name'] = params['model_name']
+    params['data_type'] = str(params['data_type'])
+    with open ((params['output_dir']+'/params.json'), 'w') as outfile:
+        json.dump(params, outfile)
+    
     keys_parsing = ["train_data", "test_data", "val_data",
         "gep_filepath", "smi_filepath", "gene_filepath",
         "smiles_language_filepath", "output_dir",
@@ -153,16 +157,16 @@ def run(params):
     	if key not in keys_parsing:
         	model_param_key.append(key)
     model_params = {key: params[key] for key in model_param_key}
-    params_parse['model_params'] = model_params
-    args = candle.ArgumentStruct(**params_parse)
-    main(args.train_sensitivity_filepath, args.val_sensitivity_filepath,
+    params['model_params'] = model_params
+    args = candle.ArgumentStruct(**params)
+    main(args.train_data, args.val_data,
         args.gep_filepath, args.smi_filepath, args.gene_filepath,
         args.smiles_language_filepath, args.output_dir,
         args.model_name, args.model_params)
 
 def candle_main():
     params = initialize_parameters()
-    preprocess(params)
+    params = preprocess(params)
     run(params)
 
 if __name__ == "__main__":
