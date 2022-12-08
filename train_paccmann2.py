@@ -26,11 +26,11 @@ logging.basicConfig(stream=sys.stdout, level=logging.DEBUG)
 # yapf: disable
 parser = argparse.ArgumentParser()
 parser.add_argument(
-    'train_sensitivity_filepath', type=str,
+    'train_data', type=str,
     help='Path to the train drug sensitivity (IC50) data.'
 )
 parser.add_argument(
-    'val_sensitivity_filepath', type=str,
+    'val_data', type=str,
     help='Path to the validation drug sensitivity (IC50) data.'
 )
 parser.add_argument(
@@ -67,7 +67,7 @@ parser.add_argument(
 
 
 def main(
-    train_sensitivity_filepath, val_sensitivity_filepath, gep_filepath,
+    train_data, val_data, gep_filepath,
     smi_filepath, gene_filepath, smiles_language_filepath, output_dir,
     model_name, model_params
 ):
@@ -95,7 +95,7 @@ def main(
 
     # Assemble datasets
     train_dataset = DrugSensitivityDataset(
-        drug_sensitivity_filepath=train_sensitivity_filepath,
+        drug_sensitivity_filepath=train_data,
         smi_filepath=smi_filepath,
         gene_expression_filepath=gep_filepath,
         smiles_language=smiles_language,
@@ -139,7 +139,7 @@ def main(
 
 
     val_dataset = DrugSensitivityDataset(
-        drug_sensitivity_filepath=val_sensitivity_filepath,
+        drug_sensitivity_filepath=val_data,
         smi_filepath=smi_filepath,
         gene_expression_filepath=gep_filepath,
         smiles_language=smiles_language,
@@ -320,7 +320,7 @@ if __name__ == '__main__':
     args = parser.parse_args()
     # run the training
     main(
-        args.train_sensitivity_filepath, args.val_sensitivity_filepath,
+        args.train_data, args.val_data,
         args.gep_filepath, args.smi_filepath, args.gene_filepath,
         args.smiles_language_filepath, args.output_dir, 
         args.model_name, args.model_params
