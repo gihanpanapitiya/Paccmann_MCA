@@ -126,31 +126,25 @@ def initialize_parameters():
     #Initialize parameters
     candle_data_dir = os.getenv("CANDLE_DATA_DIR")
     gParameters = candle.finalize_parameters(preprocessor_bmk)
-    #os.environ['CANDLE_DATA_DIR'] = '/tmp/data_mca'
-    fname='Data.zip'
-    origin=gParameters['data_url']
-    # Download and unpack the data in CANDLE_DATA_DIR
-    candle.file_utils.get_file(fname, origin)
     return gParameters
 
+def get_data(params):
+    fname='Data.zip'
+    origin=params['data_url']
+    # Download and unpack the data in CANDLE_DATA_DIR
+    candle.file_utils.get_file(fname, origin)
 
-def run(args):
-    main(args.train_sensitivity_filepath,
-        args.gep_filepath, args.smi_filepath, args.gene_filepath,
-        args.smiles_language_filepath, args.output_dir,
-        args.model_name, args.model_params)
-
-def candle_main():
-    params = initialize_parameters()
+def run(params):
     params_parse = {}
     params_parse['train_sensitivity_filepath'] = os.environ['CANDLE_DATA_DIR'] + '/common/Data/'+params['train_data']
+    params_parse['val_sensitivity_filepath'] = os.environ['CANDLE_DATA_DIR'] + '/common/Data/'+params['val_data']
     params_parse['gep_filepath'] = os.environ['CANDLE_DATA_DIR'] + '/common/Data/'+params['gep_filepath']
     params_parse['smi_filepath'] = os.environ['CANDLE_DATA_DIR'] + '/common/Data/'+params['smi_filepath']
     params_parse['gene_filepath'] = os.environ['CANDLE_DATA_DIR'] + '/common/Data/'+params['gene_filepath']
     params_parse['smiles_language_filepath'] = os.environ['CANDLE_DATA_DIR'] + '/common/Data/'+params['smiles_language_filepath']
     params_parse['output_dir'] = params['output_dir']
     params_parse['model_name'] = params['model_name']
-    keys_parsing = ["train_data", "test_data",
+    keys_parsing = ["train_data", "test_data", "val_data",
         "gep_filepath", "smi_filepath", "gene_filepath",
         "smiles_language_filepath", "output_dir",
         "model_name"]
@@ -161,7 +155,16 @@ def candle_main():
     model_params = {key: params[key] for key in model_param_key}
     params_parse['model_params'] = model_params
     args = candle.ArgumentStruct(**params_parse)
-    run(args)
+    main(args.train_sensitivity_filepath, args.val_sensitivity_filepath,
+        args.gep_filepath, args.smi_filepath, args.gene_filepath,
+        args.smiles_language_filepath, args.output_dir,
+        args.model_name, args.model_params)
+
+def candle_main():
+    params = initialize_parameters()
+    get_data(params)
+    run(params)
+
 if __name__ == "__main__":
     candle_main()
 
