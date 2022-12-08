@@ -128,7 +128,7 @@ def initialize_parameters():
     gParameters = candle.finalize_parameters(preprocessor_bmk)
     return gParameters
 
-def get_data(params):
+def preprocess(params):
     fname='Data.zip'
     origin=params['data_url']
     # Download and unpack the data in CANDLE_DATA_DIR
@@ -162,7 +162,7 @@ def run(params):
 
 def candle_main():
     params = initialize_parameters()
-    get_data(params)
+    preprocess(params)
     run(params)
 
 if __name__ == "__main__":
