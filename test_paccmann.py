@@ -28,8 +28,8 @@ file_path = os.path.dirname(os.path.realpath(__file__))
 parser = argparse.ArgumentParser()
 
 parser.add_argument(
-    'test_sensitivity_filepath', type=str,
-    help='Path to the drug sensitivity (IC50) data.'
+    'test_data', type=str,
+    help='Path to the test drug sensitivity (IC50) data.'
 )
 parser.add_argument(
     'gep_filepath', type=str,
@@ -65,7 +65,7 @@ parser.add_argument(
 
 
 def main(
-    test_sensitivity_filepath, gep_filepath,
+    test_data, gep_filepath,
     smi_filepath, gene_filepath, smiles_language_filepath, output_dir,
     model_name, model_params
 ):
@@ -91,7 +91,7 @@ def main(
 
 
     test_dataset = DrugSensitivityDataset(
-        drug_sensitivity_filepath=test_sensitivity_filepath,
+        drug_sensitivity_filepath=test_data,
         smi_filepath=smi_filepath,
         gene_expression_filepath=gep_filepath,
         smiles_language=smiles_language,
@@ -208,7 +208,7 @@ if __name__ == '__main__':
     args = parser.parse_args()
     # run the training
     main(
-        args.test_sensitivity_filepath,
+        args.test_data,
         args.gep_filepath, args.smi_filepath, args.gene_filepath,
         args.smiles_language_filepath, args.output_dir, 
         args.model_name, args.model_params
