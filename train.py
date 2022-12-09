@@ -159,10 +159,7 @@ def run(params):
     model_params = {key: params[key] for key in model_param_key}
     params['model_params'] = model_params
     args = candle.ArgumentStruct(**params)
-    main(args.train_data, args.val_data,
-        args.gep_filepath, args.smi_filepath, args.gene_filepath,
-        args.smiles_language_filepath, args.output_dir,
-        args.model_name, args.model_params)
+    main(args)
 
 def candle_main():
     params = initialize_parameters()
