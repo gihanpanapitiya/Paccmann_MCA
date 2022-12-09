@@ -130,15 +130,23 @@ def initialize_parameters():
     return gParameters
 
 def preprocess(params):
-    #fname='Data.zip'
+    fname='Data_MCA.zip'
     origin=params['data_url']
     # Download and unpack the data in CANDLE_DATA_DIR
+    candle.file_utils.get_file(fname, origin)
+    params['train_data'] = os.environ['CANDLE_DATA_DIR'] + '/common/Data/'+params['train_data']
+    params['val_data'] = os.environ['CANDLE_DATA_DIR'] + '/common/Data/'+params['val_data']
+    params['gep_filepath'] = os.environ['CANDLE_DATA_DIR'] + '/common/Data/'+params['gep_filepath']
+    params['smi_filepath'] = os.environ['CANDLE_DATA_DIR'] + '/common/Data/'+params['smi_filepath']
+    params['gene_filepath'] = os.environ['CANDLE_DATA_DIR'] + '/common/Data/'+params['gene_filepath']
+    params['smiles_language_filepath'] = os.environ['CANDLE_DATA_DIR'] + '/common/Data/'+params['smiles_language_filepath']
+    """ 
     params["train_data"] = candle.get_file(params['train_data'], origin, datadir=params['data_dir'], cache_subdir=None)
     params["val_data"] = candle.get_file(params['val_data'], origin, datadir=params['data_dir'], cache_subdir=None)
     params["gep_filepath"] = candle.get_file(params['gep_filepath'], origin, datadir=params['data_dir'], cache_subdir=None)
     params["smi_filepath"] = candle.get_file(params['smi_filepath'], origin, datadir=params['data_dir'], cache_subdir=None)
     params["gene_filepath"] = candle.get_file(params['gene_filepath'], origin, datadir=params['data_dir'], cache_subdir=None)
-    params["smiles_language_filepath"] = candle.get_file(params['smiles_language_filepath'], origin, datadir=params['data_dir'], cache_subdir=None)
+    params["smiles_language_filepath"] = candle.get_file(params['smiles_language_filepath'], origin, datadir=params['data_dir'], cache_subdir=None) """
     return params
 
 def run(params):
