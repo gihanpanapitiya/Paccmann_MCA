@@ -159,7 +159,11 @@ def run(params):
     model_params = {key: params[key] for key in model_param_key}
     params['model_params'] = model_params
     args = candle.ArgumentStruct(**params)
-    main(args)
+    scores = main(args)
+    with open(params['output_dir'] + "/scores.json", "w", encoding="utf-8") as f:
+        json.dump(scores, f, ensure_ascii=False, indent=4)
+
+    print('IMPROVE_RESULT val_loss:\t' + str(scores['val_loss']))
 
 def candle_main():
     params = initialize_parameters()
