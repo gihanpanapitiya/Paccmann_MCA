@@ -82,7 +82,8 @@ def main(args):
     params = model_params
 
     # Create model directory and dump files
-    model_dir = os.path.join(output_dir, model_name)
+    #model_dir = os.path.join(output_dir, model_name)
+    model_dir = output_dir
     os.makedirs(os.path.join(model_dir, 'weights'), exist_ok=True)
     os.makedirs(os.path.join(model_dir, 'results'), exist_ok=True)
     #with open(os.path.join(model_dir, 'model_params.json'), 'w') as fp:
@@ -297,10 +298,12 @@ def main(args):
     val_loss_a = val_loss / len(val_loader)
     #Creating a dictionary with the scores
     scores = {}
-    scores['r2'] = r2
-    scores['mean_absolute_error'] = mean_absolute_error
-    scores['spearmanr'] = val_spearman_a
-    scores['pearsonr'] = val_pearson_a.cpu().detach().numpy().tolist()
+    #scores['r2'] = r2
+    #scores['mean_absolute_error'] = mean_absolute_error
+    scores['val_loss'] = val_loss_a
+    scores['scc'] = val_spearman_a
+    scores['pcc'] = val_pearson_a.cpu().detach().numpy().tolist()
+    scores['rmse'] = val_rmse_a
     logger.info(
         f"\t **** VALIDATION  **** "
         f"loss: {val_loss_a:.5f}, "
@@ -308,9 +311,9 @@ def main(args):
         f"RMSE: {val_rmse_a:.3f}"
     )
     # Save scores and final preds
-    save_dir = str(model_dir+'/results/val_results.json')
-    with open(save_dir, 'w') as fp:
-        json.dump(scores, fp)
+    #save_dir = str(model_dir+'/results/val_results.json')
+    #with open(save_dir, 'w') as fp:
+     #   json.dump(scores, fp)
     pred = pd.DataFrame({"True": labels, "Pred": predictions}).reset_index()
     te_df1 = val_loader.dataset.drug_sensitivity_df[['drug','cell_line', 'IC50']].reset_index()
     te_df = te_df1.rename(columns={'drug': 'DrugID', 'cell_line': 'CancID', 'IC50':'IC50'})
@@ -319,6 +322,7 @@ def main(args):
     pred['True'] = ((pred['True']*1000).apply(np.round))/1000
     pred_fname = str(model_dir+'/results/val_pred.csv')
     pred.to_csv(pred_fname, index=False)
+    return scores
 
 if __name__ == '__main__':
     # parse arguments
