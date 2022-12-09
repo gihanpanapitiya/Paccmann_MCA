@@ -66,11 +66,16 @@ parser.add_argument(
 # yapf: enable
 
 
-def main(
-    train_data, val_data, gep_filepath,
-    smi_filepath, gene_filepath, smiles_language_filepath, output_dir,
-    model_name, model_params
-):
+def main(args):
+    train_data = args.train_data
+    val_data = args.val_data
+    gep_filepath = args.gep_filepath
+    smi_filepath = args.smi_filepath
+    gene_filepath = args.gene_filepath
+    smiles_language_filepath = args.smiles_language_filepath
+    output_dir = args.output_dir
+    model_name = args.model_name
+    model_params = args.model_params
 
     logger = logging.getLogger(f'{model_name}')
     # Process parameter file:
@@ -318,10 +323,4 @@ def main(
 if __name__ == '__main__':
     # parse arguments
     args = parser.parse_args()
-    # run the training
-    main(
-        args.train_data, args.val_data,
-        args.gep_filepath, args.smi_filepath, args.gene_filepath,
-        args.smiles_language_filepath, args.output_dir, 
-        args.model_name, args.model_params
-    )
+    main(args)
