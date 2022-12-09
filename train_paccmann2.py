@@ -23,71 +23,22 @@ import sklearn
 # setup logging
 logging.basicConfig(stream=sys.stdout, level=logging.DEBUG)
 
-# yapf: disable
-parser = argparse.ArgumentParser()
-parser.add_argument(
-    'train_data', type=str,
-    help='Path to the train drug sensitivity (IC50) data.'
-)
-parser.add_argument(
-    'val_data', type=str,
-    help='Path to the validation drug sensitivity (IC50) data.'
-)
-parser.add_argument(
-    'gep_filepath', type=str,
-    help='Path to the gene expression profile data.'
-)
-parser.add_argument(
-    'smi_filepath', type=str,
-    help='Path to the SMILES data.'
-)
-parser.add_argument(
-    'gene_filepath', type=str,
-    help='Path to a pickle object containing list of genes.'
-)
-parser.add_argument(
-    'smiles_language_filepath', type=str,
-    help='Path to a pickle object a SMILES language object.'
-)
-parser.add_argument(
-    'output_dir', type=str,
-    help='Directory where the model will be stored.'
-)
-
-parser.add_argument(
-    'model_name', type=str,
-    help='Name for the training.'
-)
-
-parser.add_argument(
-    'model_params', type=dict,
-    help='Dictionary of parameters.'
-)
-# yapf: enable
-
-
-def main(args):
-    train_data = args.train_data
-    val_data = args.val_data
-    gep_filepath = args.gep_filepath
-    smi_filepath = args.smi_filepath
-    gene_filepath = args.gene_filepath
-    smiles_language_filepath = args.smiles_language_filepath
-    output_dir = args.output_dir
-    model_name = args.model_name
-    model_params = args.model_params
+def main(params):
+    train_data = params['train_data']
+    val_data = params['val_data']
+    gep_filepath = params['gep_filepath']
+    smi_filepath = params['smi_filepath']
+    gene_filepath = params['gene_filepath']
+    smiles_language_filepath = params['smiles_language_filepath']
+    output_dir = params['output_dir']
+    model_name = params['model_name']
 
     logger = logging.getLogger(f'{model_name}')
-    # Process parameter file:
-    params = model_params
-
     # Create model directory and dump files
     #model_dir = os.path.join(output_dir, model_name)
     model_dir = output_dir
     os.makedirs(os.path.join(model_dir, 'weights'), exist_ok=True)
     os.makedirs(os.path.join(model_dir, 'results'), exist_ok=True)
-    #with open(os.path.join(model_dir, 'model_params.json'), 'w') as fp:
-   	 #json.dump(dict(params), fp, indent=4)
 
     # Prepare the dataset
     logger.info("Start data preprocessing...")
@@ -326,5 +277,5 @@ def main(args):
 
 if __name__ == '__main__':
     # parse arguments
-    args = parser.parse_args()
-    main(args)
+    #args = parser.parse_args()
+    main(params)
