@@ -20,7 +20,7 @@ Two evaluation schemes were used for the analysis of prediction performance.
 ## URLs
 - Original GitHub: https://github.com/PaccMann/paccmann_predictor
 - IMPROVE GitHub: https://github.com/JDACS4C-IMPROVE/Paccmann_MCA/tree/develop
-- Data: https://ftp.mcs.anl.gov/pub/candle/public/improve/Paccmann_MCA/Data.zip
+- Data: https://ftp.mcs.anl.gov/pub/candle/public/improve/model_curation_data/Paccmann_MCA/Data_MCA.zip
 
 ## Reference
 Manica, Matteo, et al. "Toward explainable anticancer compound sensitivity prediction via multimodal attention-based convolutional encoders." Molecular Pharmaceutics 16.12 (2019): 4797-4806.
