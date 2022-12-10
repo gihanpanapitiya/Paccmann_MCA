@@ -144,7 +144,7 @@ def main(
         (model.parameters(), lr=params.get('learning_rate', 0.01))
     )
     # Loading trained model
-    checkpoint = torch.load(str(file_path + '/save/ckpts/last/model.h5'))
+    checkpoint = torch.load(str(file_path + '/save/ckpts/best/model.h5'))
     model.load_state_dict(checkpoint['model_state_dict'])
     optimizer.load_state_dict(checkpoint['optimizer_state_dict'])
     epoch = checkpoint['epoch']
