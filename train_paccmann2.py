@@ -94,7 +94,6 @@ def main(params):
         f'Training dataset has {len(train_dataset)} samples.'
     )
 
-
     val_dataset = DrugSensitivityDataset(
         drug_sensitivity_filepath=val_data,
         smi_filepath=smi_filepath,
@@ -165,10 +164,6 @@ def main(params):
     num_params = sum(p.numel() for p in model.parameters() if p.requires_grad)
     params.update({'number_of_parameters': num_params})
     logger.info(f'Number of parameters {num_params}')
-   
-    # Overwrite params.json file with updated parameters.
-    #with open(os.path.join(model_dir, 'model_params.json'), 'w') as fp:
-        #json.dump(params, fp)
 
     # Start training
     logger.info('Training about to start...\n')
@@ -184,7 +179,8 @@ def main(params):
     if J is not None:
         initial_epoch = J["epoch"]
         print("restarting from ckpt: initial_epoch: %i" % initial_epoch)
-
+    
+    scores = {}
     for epoch in range(params['epochs']):
 
         model.train()
@@ -211,71 +207,68 @@ def main(params):
         )
         t = time()
 
+        # Measure validation performance
+        model.eval()
+        with torch.no_grad():
+            val_loss = 0
+            predictions = []
+            labels = []
+            for ind, (smiles, gep, y) in enumerate(val_loader):
+                y_hat, pred_dict = model(
+                    torch.squeeze(smiles.to(device)), gep.to(device)
+                )
+                predictions.append(y_hat)
+                labels.append(y)
+                loss = model.loss(y_hat, y.to(device))
+                val_loss += loss.item()
 
-        def save(path, metric, typ, val=None):
-            model.save(path.format(typ, metric, params.get('model_fn', 'mca')))
-
-    ckpt.ckpt_epoch(epoch, train_loss)
-    save(save_top_model, 'training', 'done')
-    logger.info('Done with training, models saved, shutting down.')
-
-
-    # Measure validation performance
-    model.eval()
-    with torch.no_grad():
-        val_loss = 0
-        predictions = []
-        labels = []
-        for ind, (smiles, gep, y) in enumerate(val_loader):
-            y_hat, pred_dict = model(
-                torch.squeeze(smiles.to(device)), gep.to(device)
+        predictions = np.array(
+            [p.cpu() for preds in predictions for p in preds]
+        ,dtype = np.float )
+        predictions = predictions[0:len(predictions)]
+        labels = np.array([l.cpu() for label in labels for l in label],dtype = np.float)
+        labels = labels[0:len(labels)]
+        val_pearson_a = pearsonr(torch.Tensor(predictions), torch.Tensor(labels))
+        val_spearman_a = spearmanr(labels, predictions)[0]
+        mean_absolute_error = sklearn.metrics.mean_absolute_error(y_true=labels, y_pred=predictions)
+        r2 = sklearn.metrics.r2_score(y_true=labels, y_pred=predictions)
+        val_rmse_a = np.sqrt(np.mean((predictions - labels)**2))
+        val_loss_a = val_loss / len(val_loader)
+        if epoch == 0:
+            min_val_loss = val_loss_a
+            scores['val_loss'] = val_loss_a
+            scores['scc'] = val_spearman_a
+            scores['pcc'] = val_pearson_a.cpu().detach().numpy().tolist()
+            scores['rmse'] = val_rmse_a
+        if val_loss_a<min_val_loss:
+            min_val_loss = val_loss_a
+            #Creating a dictionary with the scores
+            #scores['r2'] = r2
+            #scores['mean_absolute_error'] = mean_absolute_error
+            scores['val_loss'] = val_loss_a
+            scores['scc'] = val_spearman_a
+            scores['pcc'] = val_pearson_a.cpu().detach().numpy().tolist()
+            scores['rmse'] = val_rmse_a
+            logger.info(
+                f"\t **** VALIDATION  **** "
+                f"loss: {val_loss_a:.5f}, "
+                f"Pearson: {val_pearson_a:.3f}, "
+                f"RMSE: {val_rmse_a:.3f}"
             )
-            predictions.append(y_hat)
-            labels.append(y)
-            loss = model.loss(y_hat, y.to(device))
-            val_loss += loss.item()
+            # Save scores and final preds
+            pred = pd.DataFrame({"True": labels, "Pred": predictions}).reset_index()
+            te_df1 = val_loader.dataset.drug_sensitivity_df[['drug','cell_line', 'IC50']].reset_index()
+            te_df = te_df1.rename(columns={'drug': 'DrugID', 'cell_line': 'CancID', 'IC50':'IC50'})
+            pred = pd.concat([te_df, pred], axis=1)
+            pred['IC50'] = ((pred['IC50']*1000).apply(np.round))/1000
+            pred['True'] = ((pred['True']*1000).apply(np.round))/1000
+            pred_fname = str(model_dir+'/results/val_pred.csv')
+            pred.to_csv(pred_fname, index=False)
 
-    predictions = np.array(
-        [p.cpu() for preds in predictions for p in preds]
-    ,dtype = np.float )
-    predictions = predictions[0:len(predictions)]
-    labels = np.array([l.cpu() for label in labels for l in label],dtype = np.float)
-    labels = labels[0:len(labels)]
-    val_pearson_a = pearsonr(torch.Tensor(predictions), torch.Tensor(labels))
-    val_spearman_a = spearmanr(labels, predictions)[0]
-    mean_absolute_error = sklearn.metrics.mean_absolute_error(y_true=labels, y_pred=predictions)
-    r2 = sklearn.metrics.r2_score(y_true=labels, y_pred=predictions)
-    val_rmse_a = np.sqrt(np.mean((predictions - labels)**2))
-    val_loss_a = val_loss / len(val_loader)
-    #Creating a dictionary with the scores
-    scores = {}
-    #scores['r2'] = r2
-    #scores['mean_absolute_error'] = mean_absolute_error
-    scores['val_loss'] = val_loss_a
-    scores['scc'] = val_spearman_a
-    scores['pcc'] = val_pearson_a.cpu().detach().numpy().tolist()
-    scores['rmse'] = val_rmse_a
-    logger.info(
-        f"\t **** VALIDATION  **** "
-        f"loss: {val_loss_a:.5f}, "
-        f"Pearson: {val_pearson_a:.3f}, "
-        f"RMSE: {val_rmse_a:.3f}"
-    )
-    # Save scores and final preds
-    #save_dir = str(model_dir+'/results/val_results.json')
-    #with open(save_dir, 'w') as fp:
-     #   json.dump(scores, fp)
-    pred = pd.DataFrame({"True": labels, "Pred": predictions}).reset_index()
-    te_df1 = val_loader.dataset.drug_sensitivity_df[['drug','cell_line', 'IC50']].reset_index()
-    te_df = te_df1.rename(columns={'drug': 'DrugID', 'cell_line': 'CancID', 'IC50':'IC50'})
-    pred = pd.concat([te_df, pred], axis=1)
-    pred['IC50'] = ((pred['IC50']*1000).apply(np.round))/1000
-    pred['True'] = ((pred['True']*1000).apply(np.round))/1000
-    pred_fname = str(model_dir+'/results/val_pred.csv')
-    pred.to_csv(pred_fname, index=False)
+        ckpt.ckpt_epoch(epoch, val_loss_a)
+
+    logger.info('Done with training, models saved, shutting down.')
     return scores
 
 if __name__ == '__main__':
-    # parse arguments
-    #args = parser.parse_args()
     main(params)
