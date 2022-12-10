@@ -5,7 +5,8 @@ As part of model curation, the original data that is provided by the authors is 
 ## Data
 1) 2128_genes.pkl - Gene list considered for the experiments 
 2) gdsc_cell_line_ic50_test_fraction_0.1_id_997_seed_42.csv - Test response data
-3) gdsc_cell_line_ic50_train_fraction_0.9_id_997_seed_42.csv - Train response data
+3) gdsc_cell_line_ic50_train_fraction_0.9.csv - Train response data
+4) gdsc_cell_line_ic50_val_fraction_0.1.csv - Validation data
 5) gdsc-rnaseq_gene-expression.csv - Gene expression data
 6) gdsc.smi - SMILES data in .smi format
 7) smiles_language_chembl_gdsc_ccle.pkl - SMILESLanguage generated from the smi file 
