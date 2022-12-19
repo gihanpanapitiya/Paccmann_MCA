@@ -156,7 +156,7 @@ def run(params):
     scores = main(params)
     with open(params['output_dir'] + "/scores.json", "w", encoding="utf-8") as f:
         json.dump(scores, f, ensure_ascii=False, indent=4)
-    print('IMPROVE_RESULT val_loss:\t' + str(scores['val_loss']))
+    print('IMPROVE_RESULT RMSE:\t' + str(scores['rmse']))
 
 def candle_main():
     params = initialize_parameters()
