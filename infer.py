@@ -118,7 +118,7 @@ class PaccmannMCA_candle(candle.Benchmark):
 
 def initialize_parameters():
     preprocessor_bmk = PaccmannMCA_candle(file_path,
-        'paccmann_mca_params.txt',
+        'paccmannmca_default_model.txt',
         'pytorch',
         prog='PaccmannMCA_candle',
         desc='Data Preprocessor'
