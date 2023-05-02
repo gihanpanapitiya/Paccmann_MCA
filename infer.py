@@ -129,10 +129,6 @@ def initialize_parameters():
     return gParameters
 
 def preprocess(params):
-    fname='Data.zip'
-    origin=params['data_url']
-    # Download and unpack the data in CANDLE_DATA_DIR
-    candle.file_utils.get_file(fname, origin)
     # Model-specific changes
     params['test_data'] = os.environ['CANDLE_DATA_DIR'] + '/common/Data/'+params['test_data']
     params['gep_filepath'] = os.environ['CANDLE_DATA_DIR'] + '/common/Data/'+params['gep_filepath']
