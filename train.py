@@ -130,10 +130,6 @@ def initialize_parameters():
     return gParameters
 
 def preprocess(params):
-    fname='Data_MCA.zip'
-    origin=params['data_url']
-    # Download and unpack the data in CANDLE_DATA_DIR
-    candle.file_utils.get_file(fname, origin)
     params['train_data'] = os.environ['CANDLE_DATA_DIR'] + '/common/Data/'+params['train_data']
     params['val_data'] = os.environ['CANDLE_DATA_DIR'] + '/common/Data/'+params['val_data']
     params['gep_filepath'] = os.environ['CANDLE_DATA_DIR'] + '/common/Data/'+params['gep_filepath']
