@@ -1,6 +1,6 @@
 import candle
 import os
-from paccmannmca_baseline_pytorch import main
+# from paccmannmca_baseline_pytorch import main
 import json
 
 
@@ -132,7 +132,9 @@ def preprocess(params):
     fname='Data_MCA.zip'
     origin=params['data_url']
     # Download and unpack the data in CANDLE_DATA_DIR
-    candle.file_utils.get_file(fname, origin)
+    candle.file_utils.get_file(fname=fname, 
+    origin=origin, 
+    cache_subdir='Paccmann_MCA')
 
 
 def candle_main():
