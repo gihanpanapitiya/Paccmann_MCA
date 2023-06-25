@@ -114,7 +114,20 @@ additional_definitions = [
     {'name': 'gene_expression_processing_parameters',
      'type': dict,
      'help': 'Parameters for processing gene expression data'
+     },
+    {'name': 'data_split_seed',
+     'type': int,
+     'help': 'seed for random splitting'
+     },
+    {'name': 'data_type',
+     'type': str,
+     'help': '....'
+     },
+    {'name': 'metric',
+     'type': str,
+     'help': '....'
      }
+
 ]
 
 required = None
@@ -145,14 +158,16 @@ def initialize_parameters():
     return gParameters
 
 def preprocess(params):
-    params['train_data'] = os.environ['CANDLE_DATA_DIR'] + '/'+ params['model_name']+'/Data/'+params['train_data']
-    params['val_data'] = os.environ['CANDLE_DATA_DIR'] + '/'+ params['model_name']+'/Data/'+params['val_data']
+    params['CANDLE_DATA_DIR'] = os.environ['CANDLE_DATA_DIR']
+    # params['train_data'] = os.environ['CANDLE_DATA_DIR'] + '/'+ params['model_name']+'/Data/'+params['train_data']
+    # params['val_data'] = os.environ['CANDLE_DATA_DIR'] + '/'+ params['model_name']+'/Data/'+params['val_data']
     params['gep_filepath'] = os.environ['CANDLE_DATA_DIR'] + '/'+ params['model_name']+'/Data/'+params['gep_filepath']
     params['smi_filepath'] = os.environ['CANDLE_DATA_DIR'] + '/'+ params['model_name']+'/Data/'+params['smi_filepath']
     params['gene_filepath'] = os.environ['CANDLE_DATA_DIR'] + '/'+ params['model_name']+'/Data/'+params['gene_filepath']
     params['smiles_language_filepath'] = os.environ['CANDLE_DATA_DIR'] + '/' +  params['model_name']+'/Data/'+params['smiles_language_filepath']
 
-    params['test_data'] = os.environ['CANDLE_DATA_DIR'] + '/'+ params['model_name']+'/Data/'+params['test_data']
+  
+    # params['test_data'] = os.environ['CANDLE_DATA_DIR'] + '/'+ params['model_name']+'/Data/'+params['test_data']
 
 
     """ 
@@ -175,7 +190,7 @@ if __name__ == '__main__':
         json.dump(params, outfile)
 
     # train model
-    scores = train(params)
+    scores, test_data = train(params)
 
 
     with open(params['output_dir'] + "/scores.json", "w", encoding="utf-8") as f:
@@ -187,10 +202,13 @@ if __name__ == '__main__':
     # args = candle.ArgumentStruct(**params)
     print("output: ", params['output_dir'])
     
-    predict(params['test_data'],
-    params['gep_filepath'], params['smi_filepath'], params['gene_filepath'],
-    params['smiles_language_filepath'], params['output_dir'],
-    params['model_name'], params)
+    predict(
+        test_data,
+        params['gep_filepath'], 
+        params['smi_filepath'], 
+        params['gene_filepath'],
+        params['smiles_language_filepath'], 
+        params['output_dir'],params['model_name'], params)
 
 
 

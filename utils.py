@@ -17,20 +17,38 @@ import candle
 import pandas as pd
 from scipy.stats import spearmanr
 import sklearn
-
+from sklearn.model_selection import train_test_split
+from data_utils import load_drug_response_data, process_response_data, download_candle_split_data
+from data_utils import process_candle_smiles_data, process_candle_gexp_data
 # file_path = os.path.dirname(os.path.realpath(__file__))
 
 logging.basicConfig(stream=sys.stdout, level=logging.DEBUG)
 
 def train(params):
-    train_data = params['train_data']
-    val_data = params['val_data']
+    # train_data = params['train_data']
+    # val_data = params['val_data']
     gep_filepath = params['gep_filepath']
     smi_filepath = params['smi_filepath']
     gene_filepath = params['gene_filepath']
     smiles_language_filepath = params['smiles_language_filepath']
     output_dir = params['output_dir']
     model_name = params['model_name']
+    metric = params['metric']
+    data_split_id = params['data_split_id']
+   
+    
+    if params['data_source'] == 'ccle_candle':
+        data_type = "CCLE"
+    elif params['data_source'] == 'ctrpv2_candle':
+        data_type = "CTRPv2"
+    elif params['data_source'] == 'gdscv1_candle':
+        data_type = "GDSCv1"
+    elif params['data_source'] == 'gdscv2_candle':
+        data_type = "GDSCv2"
+    elif params['data_source'] == 'gsci_candle':
+        data_type = "gCSI"
+    
+
 
     logger = logging.getLogger(f'{model_name}')
     # Create model directory and dump files
@@ -49,6 +67,34 @@ def train(params):
     with open(gene_filepath, 'rb') as f:
         gene_list = pickle.load(f)
 
+    data_dir = params['CANDLE_DATA_DIR'] + '/'+ params['model_name']+'/Data/'
+
+
+
+    # general loading
+    train_data = load_drug_response_data(data_path=data_dir, data_type=data_type, split_id=data_split_id,
+         split_type='train', response_type=metric, sep="\t", dropna=True)
+    val_data = load_drug_response_data(data_path=data_dir, data_type=data_type, split_id=data_split_id,
+         split_type='val', response_type=metric, sep="\t", dropna=True)
+    test_data = load_drug_response_data(data_path=data_dir, data_type=data_type, split_id=data_split_id,
+         split_type='test', response_type=metric, sep="\t", dropna=True)
+         
+    if params['data_split_seed']>-1:
+        all_data = pd.concat([train_data, val_data, test_data], axis=0)
+        all_data.reset_index(drop=True, inplace=True)
+        # response = pd.read_csv( os.path.join(data_dir, 'response.csv'), index_col=0 )
+        train_data, val_data = train_test_split(all_data, test_size=.2, random_state=params['data_split_seed'])
+        val_data, test_data = train_test_split(val_data, test_size=.5, random_state=params['data_split_seed'])
+
+  
+    # pacmannn specific processing
+    train_data = process_response_data(train_data, metric)
+    val_data = process_response_data(val_data, metric)
+    test_data = process_response_data(test_data, metric)
+    process_candle_smiles_data(data_dir)
+    process_candle_gexp_data(data_dir)
+
+        
     # Assemble datasets
     train_dataset = DrugSensitivityDataset(
         drug_sensitivity_filepath=train_data,
@@ -267,7 +313,7 @@ def train(params):
         ckpt.ckpt_epoch(epoch, val_loss_a)
 
     logger.info('Done with training, models saved, shutting down.')
-    return scores
+    return scores, test_data
 
 
 
@@ -400,13 +446,15 @@ def predict(
     save_dir = str(model_dir+'/results/results.json')
     with open(save_dir, 'w') as fp:
         json.dump(scores, fp)
-    pred = pd.DataFrame({"True": labels, "Pred": predictions}).reset_index()
+    pred = pd.DataFrame({"true": labels, "pred": predictions}).reset_index()
     te_df1 = test_loader.dataset.drug_sensitivity_df[['drug','cell_line', 'IC50']].reset_index()
-    te_df = te_df1.rename(columns={'drug': 'DrugID', 'cell_line': 'CancID', 'IC50':'IC50'})
+    # te_df = te_df1.rename(columns={'drug': 'DrugID', 'cell_line': 'CancID', 'IC50':'IC50'})
+    te_df = te_df1.rename(columns={'drug': 'drug_id', 'cell_line': 'cell_line_id', 'IC50':'labels'})
     pred = pd.concat([te_df, pred], axis=1)
-    pred['IC50'] = ((pred['IC50']*1000).apply(np.round))/1000
-    pred['True'] = ((pred['True']*1000).apply(np.round))/1000
-    pred_fname = str(model_dir+'/results/pred.csv')
+    pred['labels'] = ((pred['labels']*1000).apply(np.round))/1000
+    pred['true'] = ((pred['true']*1000).apply(np.round))/1000
+    # pred_fname = str(model_dir+'/results/pred.csv')
+    pred_fname = os.path.join(output_dir,'test_predictions.csv')
     pred.to_csv(pred_fname, index=False)
 
 

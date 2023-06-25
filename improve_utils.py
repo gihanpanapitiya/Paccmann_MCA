@@ -7,9 +7,9 @@ from scipy import stats
 from typing import List, Union, Optional, Tuple
 
 
-fdir = Path(__file__).resolve().parent
-
-
+# fdir = Path(__file__).resolve().parent
+CANDLE_DATA_DIR=os.getenv("CANDLE_DATA_DIR")
+fdir = os.path.join(CANDLE_DATA_DIR, 'Pacmann_MCA','Data')
 # -----------------------------------------------------------------------------
 # TODO
 # Note!
@@ -35,7 +35,7 @@ improve_globals = types.SimpleNamespace()
 # TODO:
 # This is CANDLE_DATA_DIR (or something...).
 # How this is going to be passed to the code?
-improve_globals.main_data_dir = fdir/"csa_data"
+improve_globals.main_data_dir = os.path.join(fdir,"csa_data")
 # improve_globals.main_data_dir = fdir/"improve_data_dir"
 # imp_globals.main_data_dir = fdir/"candle_data_dir"
 
@@ -69,6 +69,7 @@ improve_globals.copy_number_fname = "cancer_copy_number.txt"  # cancer feature
 improve_globals.discretized_copy_number_fname = "cancer_discretized_copy_number.txt"  # cancer feature
 improve_globals.dna_methylation_fname = "cancer_DNA_methylation.txt"  # cancer feature
 improve_globals.gene_expression_fname = "cancer_gene_expression.txt"  # cancer feature
+improve_globals.cell_mutation_fname = "cancer_mutation_count.txt" #cancer feather
 # TODO: add the other omics types
 # ...
 # ...
@@ -80,25 +81,26 @@ improve_globals.mordred_file_name = "drug_mordred.txt"  # drug feature
 improve_globals.ecfp4_512bit_file_name = "drug_ecfp4_512bit.txt"  # drug feature
 
 # Globals derived from the ones defined above
-improve_globals.raw_data_dir = improve_globals.main_data_dir/improve_globals.raw_data_dir_name # raw_data
-improve_globals.ml_data_dir = improve_globals.main_data_dir/improve_globals.ml_data_dir_name # ml_data
-improve_globals.x_data_dir   = improve_globals.raw_data_dir/improve_globals.x_data_dir_name    # x_data
-improve_globals.y_data_dir   = improve_globals.raw_data_dir/improve_globals.y_data_dir_name    # y_data
-improve_globals.splits_dir   = improve_globals.raw_data_dir/improve_globals.splits_dir_name    # splits
-improve_globals.models_dir   = improve_globals.raw_data_dir/improve_globals.models_dir_name    # models
-improve_globals.infer_dir    = improve_globals.raw_data_dir/improve_globals.infer_dir_name     # infer
+improve_globals.raw_data_dir = os.path.join(improve_globals.main_data_dir,improve_globals.raw_data_dir_name) # raw_data
+improve_globals.ml_data_dir = os.path.join(improve_globals.main_data_dir,improve_globals.ml_data_dir_name) # ml_data
+improve_globals.x_data_dir   = os.path.join(improve_globals.raw_data_dir,improve_globals.x_data_dir_name)    # x_data
+improve_globals.y_data_dir   = os.path.join(improve_globals.raw_data_dir,improve_globals.y_data_dir_name)    # y_data
+improve_globals.splits_dir   = os.path.join(improve_globals.raw_data_dir,improve_globals.splits_dir_name)    # splits
+improve_globals.models_dir   = os.path.join(improve_globals.raw_data_dir,improve_globals.models_dir_name)    # models
+improve_globals.infer_dir    = os.path.join(improve_globals.raw_data_dir,improve_globals.infer_dir_name)     # infer
 
-improve_globals.y_file_path = improve_globals.y_data_dir/improve_globals.y_file_name           # response.txt
-improve_globals.copy_number_file_path = improve_globals.x_data_dir/improve_globals.copy_number_fname  # cancer_copy_number.txt
-improve_globals.dna_methylation_file_path = improve_globals.x_data_dir/improve_globals.dna_methylation_fname  # cancer_DNA_methylation.txt
-improve_globals.gene_expression_file_path = improve_globals.x_data_dir/improve_globals.gene_expression_fname  # cancer_gene_expression.txt
+improve_globals.y_file_path = os.path.join(improve_globals.y_data_dir,improve_globals.y_file_name)           # response.txt
+improve_globals.copy_number_file_path = os.path.join(improve_globals.x_data_dir,improve_globals.copy_number_fname)  # cancer_copy_number.txt
+improve_globals.dna_methylation_file_path = os.path.join(improve_globals.x_data_dir,improve_globals.dna_methylation_fname)  # cancer_DNA_methylation.txt
+improve_globals.gene_expression_file_path = os.path.join(improve_globals.x_data_dir,improve_globals.gene_expression_fname)  # cancer_gene_expression.txt
+improve_globals.cell_mutation_file_path = os.path.join(improve_globals.x_data_dir,improve_globals.cell_mutation_fname)
 # TODO: add the other omics types
 # ...
 # ...
 # ...
-improve_globals.smiles_file_path = improve_globals.x_data_dir/improve_globals.smiles_file_name  # 
-improve_globals.mordred_file_path = improve_globals.x_data_dir/improve_globals.mordred_file_name  # 
-improve_globals.ecfp4_512bit_file_path = improve_globals.x_data_dir/improve_globals.ecfp4_512bit_file_name  # 
+improve_globals.smiles_file_path = os.path.join(improve_globals.x_data_dir,improve_globals.smiles_file_name)  # 
+improve_globals.mordred_file_path = os.path.join(improve_globals.x_data_dir,improve_globals.mordred_file_name)  # 
+improve_globals.ecfp4_512bit_file_path = os.path.join(improve_globals.x_data_dir,improve_globals.ecfp4_512bit_file_name)  # 
 # -----------------------------------------------------------------------------
 
 
@@ -118,11 +120,13 @@ def load_single_drug_response_data(
     Returns datarame with cancer ids, drug ids, and drug response values. Samples
     from the original drug response file are filtered based on the specified
     sources.
+
     Args:
         source (str or list of str): DRP source name (str) or multiple sources (list of strings)
         split(int or None): split id (int), None (load all samples)
         split_type (str or None): one of the following: 'train', 'val', 'test'
         y_col_name (str): name of drug response measure/score (e.g., AUC, IC50)
+
     Returns:
         pd.Dataframe: dataframe that contains drug response values
     """
@@ -163,11 +167,13 @@ def load_single_drug_response_data_v2(
     Returns datarame with cancer ids, drug ids, and drug response values. Samples
     from the original drug response file are filtered based on the specified
     sources.
+
     Args:
         source (str or list of str): DRP source name (str) or multiple sources (list of strings)
         split(int or None): split id (int), None (load all samples)
         split_type (str or None): one of the following: 'train', 'val', 'test'
         y_col_name (str): name of drug response measure/score (e.g., AUC, IC50)
+
     Returns:
         pd.Dataframe: dataframe that contains drug response values
     """
@@ -202,6 +208,7 @@ def load_split_ids(split_file_name: Union[str, List[str]]) -> List[int]:
     """ Returns list of integers, representing the rows in the response dataset.
     Args:
         split_file_name (str or list of str): splits file name or list of file names
+
     Returns:
         list: list of integers representing the ids
     """
@@ -222,6 +229,7 @@ def load_split_file(
     """
     Args:
         source (str): DRP source name (str)
+
     Returns:
         ids (list): list of id integers
     """
@@ -231,7 +239,7 @@ def load_split_file(
     # Check if the split file exists and load
     ids = []
     for st in split_type:
-        fpath = improve_globals.splits_dir/f"{source}_split_{split}_{st}.txt"
+        fpath = Path(os.path.join(improve_globals.splits_dir, f"{source}_split_{split}_{st}.txt"))
         assert fpath.exists(), f"Splits file not found: {fpath}"
         ids_ = pd.read_csv(fpath, header=None)[0].tolist()
         ids.extend(ids_)
@@ -244,13 +252,17 @@ def load_split_file(
 
 """
 Notes about omics data.
+
 Omics data files are multi-level tables with several column types (generally 3
 or 4), each contains gene names using a different gene identifier system:
 Entrez ID, Gene Symbol, Ensembl ID, TSS
+
 The column levels are not organized in the same order across the different
 omic files.
+
 The level_map dict, in each loader function, encodes the column level and the
 corresponding identifier systems.
+
 For example, in the copy number file the level_map is:  
 level_map = {"Entrez":0, "Gene_Symbol": 1, "Ensembl": 2}
 """
@@ -262,12 +274,14 @@ def set_col_names_in_multilevel_dataframe(
     """ Util function that supports loading of the omic data files.
     Returns the input dataframe with the multi-level column names renamed as
     specified by the gene_system_identifier arg.
+
     Args:
         df (pd.DataFrame): omics dataframe
         level_map (dict): encodes the column level and the corresponding identifier systems
         gene_system_identifier (str or list of str): gene identifier system to use
             options: "Entrez", "Gene_Symbol", "Ensembl", "all", or any list
                      combination of ["Entrez", "Gene_Symbol", "Ensembl"]
+
     Returns:
         pd.DataFrame: the input dataframe with the specified multi-level column names
     """
@@ -306,10 +320,12 @@ def load_copy_number_data(
     verbose: bool=True) -> pd.DataFrame:
     """
     Returns copy number data.
+
     Args:
         gene_system_identifier (str or list of str): gene identifier system to use
             options: "Entrez", "Gene_Symbol", "Ensembl", "all", or any list
                      combination of ["Entrez", "Gene_Symbol", "Ensembl"]
+
     Returns:
         pd.DataFrame: dataframe with the omic data
     """
@@ -340,10 +356,12 @@ def load_dna_methylation_data(
     verbose: bool=True) -> pd.DataFrame:
     """
     Returns methylation data.
+
     Args:
         gene_system_identifier (str or list of str): gene identifier system to use
             options: "Entrez", "Gene_Symbol", "Ensembl", "all", or any list
                      combination of ["Entrez", "Gene_Symbol", "Ensembl"]
+
     Returns:
         pd.DataFrame: dataframe with the omic data
     """
@@ -368,10 +386,12 @@ def load_gene_expression_data(
     verbose: bool=True) -> pd.DataFrame:
     """
     Returns gene expression data.
+
     Args:
         gene_system_identifier (str or list of str): gene identifier system to use
             options: "Entrez", "Gene_Symbol", "Ensembl", "all", or any list
                      combination of ["Entrez", "Gene_Symbol", "Ensembl"]
+
     Returns:
         pd.DataFrame: dataframe with the omic data
     """
@@ -389,7 +409,33 @@ def load_gene_expression_data(
         # print(df.dtypes.value_counts())
     return df
 
+def load_cell_mutation_data(
+        gene_system_identifier: Union[str, List[str]]="Gene_Symbol",
+        sep: str="\t", verbose: bool=True) -> pd.DataFrame:
+    """
+    Returns gene expression data.
 
+    Args:
+        gene_system_identifier (str or list of str): gene identifier system to use
+            options: "Entrez", "Gene_Symbol", "Ensembl", "all", or any list
+                     combination of ["Entrez", "Gene_Symbol", "Ensembl"]
+
+    Returns:
+        pd.DataFrame: dataframe with the omic data
+    """
+    # level_map encodes the relationship btw the column and gene identifier system
+    level_map = {"Ensembl": 0, "Entrez": 1, "Gene_Symbol": 2}
+    header = [i for i in range(len(level_map))]
+
+    df = pd.read_csv(improve_globals.cell_mutation_file_path, sep=sep, index_col=0, header=header)
+
+    df.index.name = improve_globals.canc_col_name  # assign index name
+    df = set_col_names_in_multilevel_dataframe(df, level_map, gene_system_identifier)
+    if verbose:
+        print(f"cell mutation data: {df.shape}")
+        # print(df.dtypes)
+        # print(df.dtypes.value_counts())
+    return df
 
 
 # -------------------------------------
@@ -527,8 +573,10 @@ def get_common_samples(df1: pd.DataFrame, df2: pd.DataFrame, ref_col: str):
     IMPROVE-specific func.
     df1, df2 : dataframes
     ref_col : the ref column to find the common values
+
     Returns:
         df1, df2
+
     Example:
         TODO
     """
@@ -577,3 +625,4 @@ def pearson(y, f):
 def spearman(y, f):
     rs = stats.spearmanr(y, f)[0]
     return rs
+

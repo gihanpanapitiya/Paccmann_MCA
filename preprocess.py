@@ -128,6 +128,12 @@ def initialize_parameters():
     gParameters = candle.finalize_parameters(preprocessor_bmk)
     return gParameters
 
+
+# def download_candle_split_data(data_type="CCLE", split_id=0):
+
+
+
+
 def preprocess(params):
     fname='Data_MCA.zip'
     origin=params['data_url']
@@ -135,6 +141,9 @@ def preprocess(params):
     candle.file_utils.get_file(fname=fname, 
     origin=origin, 
     cache_subdir='Paccmann_MCA')
+
+
+# def download_ccle(params):
 
 
 def candle_main():
