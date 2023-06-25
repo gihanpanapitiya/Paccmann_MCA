@@ -237,7 +237,9 @@ def process_candle_gexp_data(data_dir):
             # print(df.dtypes.value_counts())
         return df
         
-    gexp = load_gene_expression_data('cancer_gene_expression.tsv', gene_system_identifier='Gene_Symbol')
+    
+    gexp = load_gene_expression_data(os.path.join(data_dir,'cancer_gene_expression.tsv'),
+                            gene_system_identifier='Gene_Symbol')
     gexp.index.name=None
     gexp.to_csv(data_dir+'/candle_gexp.csv')
 
