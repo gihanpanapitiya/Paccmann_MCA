@@ -18,8 +18,12 @@ import pandas as pd
 from scipy.stats import spearmanr
 import sklearn
 from sklearn.model_selection import train_test_split
-from data_utils import load_drug_response_data, process_response_data, download_candle_split_data
-from data_utils import process_candle_smiles_data, process_candle_gexp_data
+# from data_utils import load_drug_response_data, process_response_data, ÷ad_candle_split_data
+# from data_utils import process_candle_smiles_data, process_candle_gexp_data
+from data_utils import Downloader, DataProcessor
+from model_data_preprocess import process_response_data, process_candle_smiles_data, process_candle_gexp_data
+
+
 # file_path = os.path.dirname(os.path.realpath(__file__))
 
 logging.basicConfig(stream=sys.stdout, level=logging.DEBUG)
@@ -35,6 +39,7 @@ def train(params):
     model_name = params['model_name']
     metric = params['metric']
     data_split_id = params['data_split_id']
+    data_version = params['data_version']
    
     
     if params['data_source'] == 'ccle_candle':
@@ -69,14 +74,16 @@ def train(params):
 
     data_dir = params['CANDLE_DATA_DIR'] + '/'+ params['model_name']+'/Data/'
 
+    # downloader = Downloader(data_version)
+    data_processor = DataProcessor(data_version)
 
 
     # general loading
-    train_data = load_drug_response_data(data_path=data_dir, data_type=data_type, split_id=data_split_id,
+    train_data = data_processor.load_drug_response_data(data_path=data_dir, data_type=data_type, split_id=data_split_id,
          split_type='train', response_type=metric, sep="\t", dropna=True)
-    val_data = load_drug_response_data(data_path=data_dir, data_type=data_type, split_id=data_split_id,
+    val_data = data_processor.load_drug_response_data(data_path=data_dir, data_type=data_type, split_id=data_split_id,
          split_type='val', response_type=metric, sep="\t", dropna=True)
-    test_data = load_drug_response_data(data_path=data_dir, data_type=data_type, split_id=data_split_id,
+    test_data = data_processor.load_drug_response_data(data_path=data_dir, data_type=data_type, split_id=data_split_id,
          split_type='test', response_type=metric, sep="\t", dropna=True)
          
     if params['data_split_seed']>-1:
@@ -91,8 +98,10 @@ def train(params):
     train_data = process_response_data(train_data, metric)
     val_data = process_response_data(val_data, metric)
     test_data = process_response_data(test_data, metric)
-    process_candle_smiles_data(data_dir)
-    process_candle_gexp_data(data_dir)
+    smiles_df = data_processor.load_smiles_data(data_dir)
+    gexp = data_processor.load_gene_expression_data(data_dir)
+    process_candle_smiles_data(smiles_df, data_dir)
+    process_candle_gexp_data(gexp, data_dir)
 
         
     # Assemble datasets
@@ -456,5 +465,4 @@ def predict(
     # pred_fname = str(model_dir+'/results/pred.csv')
     pred_fname = os.path.join(output_dir,'test_predictions.csv')
     pred.to_csv(pred_fname, index=False)
-
 

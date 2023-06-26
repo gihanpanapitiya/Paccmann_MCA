@@ -130,6 +130,10 @@ additional_definitions = [
      {'name': 'download_data',
      'type': bool,
      'help': '....'
+     },
+    {'name': 'data_version',
+     'type': str,
+     'help': '....'
      }
 ]
 

@@ -1,7 +1,7 @@
 import os
 import urllib
 import candle
-from data_utils import download_candle_data, candle_data_dict
+from data_utils import candle_data_dict, Downloader
 
 CANDLE_DATA_DIR=os.getenv("CANDLE_DATA_DIR")
 
@@ -18,6 +18,10 @@ additional_definitions = [
      },
      {'name': 'metric',
      'type': str
+     },
+     {'name': 'data_version',
+     'type': str,
+     'help': '....'
      }
 ]
 
@@ -50,10 +54,14 @@ if __name__ == '__main__':
     params = initialize_parameters()
     data_type = candle_data_dict[params['data_source']]
     split_id = params['data_split_id']
+    data_version = params['data_version']
+
     # data_url = gParameters['data_url']
 
     data_path = os.path.join(CANDLE_DATA_DIR, params['model_name'], 'Data')
-    download_candle_data(data_type=data_type, split_id=0, data_dest=data_path)
+    downloader = Downloader(data_version)
+    downloader.download_candle_data(data_type=data_type, split_id=split_id, data_dest=data_path)
+    # download_candle_data(data_type=data_type, split_id=0, data_dest=data_path)
 
 
     fname='Data_MCA.zip'
