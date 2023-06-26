@@ -126,8 +126,11 @@ additional_definitions = [
     {'name': 'metric',
      'type': str,
      'help': '....'
+     },
+     {'name': 'download_data',
+     'type': bool,
+     'help': '....'
      }
-
 ]
 
 required = None

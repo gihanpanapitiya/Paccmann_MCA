@@ -39,4 +39,4 @@ metric='ic50'
 data_source = 'ccle_candle'
 #data_source = 'ctrpv2_candle'
 data_split_id=0
-
+download_data=False
