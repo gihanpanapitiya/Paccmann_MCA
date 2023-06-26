@@ -20,7 +20,7 @@ import sklearn
 from sklearn.model_selection import train_test_split
 # from data_utils import load_drug_response_data, process_response_data, ÷ad_candle_split_data
 # from data_utils import process_candle_smiles_data, process_candle_gexp_data
-from data_utils import Downloader, DataProcessor
+from data_utils import Downloader, DataProcessor, add_smiles
 from model_data_preprocess import process_response_data, process_candle_smiles_data, process_candle_gexp_data
 
 
@@ -335,6 +335,10 @@ def predict(
     logger = logging.getLogger(f'{model_name}')
     # Process parameter file:
     params = model_params
+    data_version = params['data_version']
+    data_processor = DataProcessor(data_version)
+    metric = params['metric']
+    data_dir = params['CANDLE_DATA_DIR'] + '/'+ params['model_name']+'/Data/'
 
     # Create model directory 
     model_dir = os.path.join(output_dir, model_name)
@@ -458,7 +462,13 @@ def predict(
     pred = pd.DataFrame({"true": labels, "pred": predictions}).reset_index()
     te_df1 = test_loader.dataset.drug_sensitivity_df[['drug','cell_line', 'IC50']].reset_index()
     # te_df = te_df1.rename(columns={'drug': 'DrugID', 'cell_line': 'CancID', 'IC50':'IC50'})
-    te_df = te_df1.rename(columns={'drug': 'drug_id', 'cell_line': 'cell_line_id', 'IC50':'labels'})
+    
+    te_df = te_df1.rename(columns={'drug': 'improve_chem_id', 'cell_line': 'improve_sample_id', 'IC50':metric})
+    smiles_df = data_processor.load_smiles_data(data_dir)
+    te_df = add_smiles(smiles_df, te_df, metric)
+    te_df['labels'] = te_df[metric]
+
+
     pred = pd.concat([te_df, pred], axis=1)
     pred['labels'] = ((pred['labels']*1000).apply(np.round))/1000
     pred['true'] = ((pred['true']*1000).apply(np.round))/1000
