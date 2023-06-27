@@ -390,8 +390,8 @@ def predict(
     test_loader = torch.utils.data.DataLoader(
         dataset=test_dataset,
         batch_size=params['batch_size'],
-        shuffle=True,
-        drop_last=True,
+        shuffle=False,
+        drop_last=False,
         num_workers=params.get('num_workers', 0)
     )
     logger.info(
@@ -470,8 +470,8 @@ def predict(
 
 
     pred = pd.concat([te_df, pred], axis=1)
-    pred['labels'] = ((pred['labels']*1000).apply(np.round))/1000
-    pred['true'] = ((pred['true']*1000).apply(np.round))/1000
+    # pred['labels'] = ((pred['labels']*1000).apply(np.round))/1000
+    # pred['true'] = ((pred['true']*1000).apply(np.round))/1000
     # pred_fname = str(model_dir+'/results/pred.csv')
     pred_fname = os.path.join(output_dir,'test_predictions.csv')
     pred.to_csv(pred_fname, index=False)
